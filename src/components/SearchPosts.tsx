@@ -2,9 +2,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+interface Post {
+  body: string;
+}
+
 function PostDetails() {
   const { title } = useParams();
-  const [Postbody, Postsetbody] = useState("");
+  const [Postbody, Postsetbody] = useState<Post | null>(null);
   // Fetch post data using the title
   // Render post details
   useEffect(() => {
@@ -14,8 +18,8 @@ function PostDetails() {
       return;
     }
     // Remove special characters from the title using Regex, this was necessary coz some of the responses from the api were undefined due to dot and comma in request from the {title}
-    const cleanedTitle = title.replace(/[^a-zA-Z0-9 '.,]/g, "");
-    console.log(cleanedTitle); // for debugging
+    const cleanedTitle: string = title.replace(/[^a-zA-Z0-9 '.,]/g, "");
+    // console.log(cleanedTitle); // for debugging
 
     fetch(`https://dummyjson.com/posts/search?q=${cleanedTitle}`)
       .then((res) => {
