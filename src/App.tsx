@@ -23,14 +23,14 @@ function App() {
       .catch((error) => console.error("Error:", error));
   }, [searchTerm]);
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     if (event.target.value === "") {
       setShowDropdown(false);
     }
   };
 
-  const closeDropdown = (value) => {
+  const closeDropdown = (value: boolean) => {
     setShowDropdown(value);
   };
 
