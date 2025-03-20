@@ -1,60 +1,91 @@
-import { useState, useEffect } from "react";
+// App.tsx
+import { useCallback, useEffect, useState } from "react";
 import DropdownCard from "./components/DropdownCard";
+import { Post } from "./types"; // Create a types.ts file for shared interfaces
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState<Post[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Debounce function
+  const debounce = (func: Function, delay: number) => {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: any[]) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  };
+
+  // Debounced search
+  const debouncedSearch = useCallback(
+    debounce(async (query: string) => {
+      if (!query) {
+        setResults([]);
+        setShowDropdown(false);
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `https://dummyjson.com/posts/search?q=${query}`
+        );
+        const data = await response.json();
+        setResults(data.posts);
+        setShowDropdown(true);
+      } catch (error) {
+        console.error("Error:", error);
+        setShowDropdown(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500),
+    []
+  );
 
   useEffect(() => {
-    if (searchTerm === "") {
-      setResults([]);
-      setShowDropdown(false);
-      return;
-    }
-
-    fetch(`https://dummyjson.com/posts/search?q=${searchTerm}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const changeddata = data.posts; // this dummyjson API sends object with `posts` array inside, expected: array with object inside
-        setResults(changeddata);
-        setShowDropdown(true);
-      })
-      .catch((error) => console.error("Error:", error));
-  }, [searchTerm]);
+    debouncedSearch(searchTerm);
+  }, [searchTerm, debouncedSearch]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    if (event.target.value === "") {
-      setShowDropdown(false);
-    }
-  };
-
-  const closeDropdown = (value: boolean) => {
-    setShowDropdown(value);
   };
 
   return (
-    <>
-      <div className="container">
-        <div className="mt-16 min-h-screen w-full flex justify-center items-start py-8">
-          <div className="w-[1000px]">
-            <div className="relative w-full min-w-[600px]">
+    // main div here
+    <div className="flex flex-col bg-gray-100">
+      <h1 className="font-montserrat text-gray-700 text-center mt-8">
+        React Search Component
+      </h1>
+      {/* Search component */}
+      <div className="min-h-screen bg-gray-100">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative">
               <input
                 type="text"
-                placeholder="Search for Posts"
+                placeholder="Search articles..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full px-4 py-2 border rounded-lg bg-zinc-100 focus:outline-none text-text "
+                className="w-full px-6 py-4 border-2 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-lg placeholder-gray-400 transition-all duration-200"
               />
+
+              {isLoading && (
+                <div className="absolute z-10 mt-2 w-full bg-white rounded-lg shadow-xl overflow-hidden">
+                  <div className="p-4 text-gray-500 text-sm">Searching...</div>
+                </div>
+              )}
+
               {showDropdown && results.length > 0 && (
-                <div className="absolute w-full mt-2 max-w-[1000px] ">
-                  <ul className="flex gap-2 flex-col ">
-                    {results.map((result, id) => (
+                <div className="absolute z-10 mt-2 w-full bg-white rounded-lg shadow-xl overflow-hidden">
+                  <ul className="divide-y divide-gray-100">
+                    {results.map((result) => (
                       <DropdownCard
+                        key={result.id}
                         result={result}
-                        closeDropdown={closeDropdown}
-                        key={id}
+                        closeDropdown={() => setShowDropdown(false)}
                       />
                     ))}
                   </ul>
@@ -64,7 +95,7 @@ function App() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import SearchPosts from "./components/SearchPosts";
+import "./index.css";
 
 import {
   Route,
@@ -14,7 +14,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/">
       <Route index element={<App />} />
-      <Route path="posts/:title" element={<SearchPosts />} />
+      <Route path="posts/:id" element={<SearchPosts />} />
     </Route>
   )
 );
