@@ -55,12 +55,12 @@ function App() {
 
   return (
     // main div here
-    <div className="flex flex-col bg-gray-100">
+    <div className="flex flex-col bg-gray-100 h-screen">
       <h1 className="font-montserrat text-gray-700 text-center mt-8">
         React Search Component
       </h1>
       {/* Search component */}
-      <div className="min-h-screen bg-gray-100">
+      <div className="h-full">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-3xl mx-auto">
             <div className="relative">
@@ -94,6 +94,22 @@ function App() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="flex flex-col justify-center items-center mb-8">
+        <h3 className=" font-bold   sm:text-sm md:text-base 2xl:text-3xl max-sm:text-sm">
+          Made with React + Tailwind
+        </h3>
+        <p className="font-medium  sm:text-sm md:text-base 2xl:text-2xl max-sm:text-sm">
+          Project Code on{" "}
+          <a
+            className="font-bold   text-sky-700 hover:text-blue-600 duration-150 sm:text-sm md:text-base 2xl:text-2xl max-sm:text-sm"
+            href="https://github.com/pratishu/React-search-component"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Github
+          </a>
+        </p>
       </div>
     </div>
   );
